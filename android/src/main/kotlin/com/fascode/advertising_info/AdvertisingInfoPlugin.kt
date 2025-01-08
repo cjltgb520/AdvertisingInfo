@@ -31,27 +31,18 @@ class AdvertisingInfoPlugin : FlutterPlugin, MethodCallHandler {
 
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
         if (call.method == "getAdvertisingInfo") {
-            try {
-                Class.forName("com.google.android.gms.ads.identifier.AdvertisingIdClient")
-                thread {
+            thread {
+                try {
+                    Class.forName("com.google.android.gms.ads.identifier.AdvertisingIdClient")
                     val adInfo = com.google.android.gms.ads.identifier.AdvertisingIdClient.getAdvertisingIdInfo(context)
                     Handler(Looper.getMainLooper()).post {
-                        result.success(
-                            mapOf(
-                                "id" to adInfo.id,
-                                "isLimitAdTrackingEnabled" to adInfo.isLimitAdTrackingEnabled
-                            )
-                        )
+                        result.success(mapOf("id" to adInfo.id, "isLimitAdTrackingEnabled" to adInfo.isLimitAdTrackingEnabled))
                     }
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                Handler(Looper.getMainLooper()).post {
-                    result.error(
-                        "-1",
-                        "Internal Error",
-                        "Can not read AdvertisingIdInfo from GMS"
-                    )
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    Handler(Looper.getMainLooper()).post {
+                        result.error("-1", "Internal Error", "Can not read AdvertisingIdInfo from GMS")
+                    }
                 }
             }
         } else {
